@@ -1,13 +1,11 @@
-import { getServerSession } from "next-auth";
-
-import { authOptions } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
+import { getUser } from "@/lib/user";
 
 export default async function Dashboard() {
-  const session = await getServerSession(authOptions);
+  const user = await getUser();
+
   return (
     <>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
+      <pre>{JSON.stringify(user, null, 2)}</pre>
     </>
   );
 }

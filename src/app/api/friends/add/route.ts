@@ -1,9 +1,8 @@
-import { getServerSession } from "next-auth";
 import { z } from "zod";
 
-import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { fetchRedis } from "@/lib/redis";
+import { getUser } from "@/lib/user";
 import { addFriendValidator } from "@/lib/validations";
 
 export async function POST(req: Request) {
@@ -32,15 +31,15 @@ export async function POST(req: Request) {
       return new Response("User not found", { status: 404 });
     }
 
-    const session = await getServerSession(authOptions);
+    const user = await getUser();
 
     /* Check if user is authenticated */
-    if (!session) {
+    if (!user) {
       return new Response("Unauthorized", { status: 401 });
     }
 
     /* Check if user is trying to add themselves */
-    if (id === session.user.id) {
+    if (id === user.id) {
       return new Response("You cannot add yourself as a friend", {
         status: 400,
       });
@@ -50,7 +49,7 @@ export async function POST(req: Request) {
     const isAlreadyAdded = (await fetchRedis(
       "sismember",
       `user:${id}:incoming_friend_requests`,
-      session.user.id
+      user.id
     )) as boolean;
 
     if (isAlreadyAdded) {
@@ -61,7 +60,7 @@ export async function POST(req: Request) {
     const isAlreadyFriend = (await fetchRedis(
       "sismember",
       `user:${id}:friends`,
-      session.user.id
+      user.id
     )) as boolean;
 
     if (isAlreadyFriend) {
@@ -69,7 +68,7 @@ export async function POST(req: Request) {
     }
 
     /* Send Add friend request */
-    db.sadd(`user:${id}:incoming_friend_requests`, session.user.id);
+    db.sadd(`user:${id}:incoming_friend_requests`, user.id);
 
     return new Response("Friend request sent!");
   } catch (error) {
