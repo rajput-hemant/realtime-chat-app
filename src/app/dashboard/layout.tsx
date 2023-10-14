@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LucideIcon, UserPlus } from "lucide-react";
 
+import { fetchRedis } from "@/lib/redis";
 import { getUser } from "@/lib/user";
+import FriendReqSidebar from "@/components/friend-req-sideabar";
 import { Icons } from "@/components/icons";
 import SignOutButton from "@/components/sign-out-button";
 
@@ -30,9 +32,14 @@ const sidebarOptions: SidebarOption[] = [
 export default async function DashboardLayout({ children }: LayoutProps) {
   const user = await getUser();
 
-  if (!user) {
-    return notFound();
-  }
+  if (!user) return notFound();
+
+  const unseenReqCount = (
+    (await fetchRedis(
+      "smembers",
+      `user:${user.id}:incoming_friend_requests`
+    )) as User[]
+  ).length;
 
   return (
     <div className="flex h-screen w-full">
@@ -70,6 +77,13 @@ export default async function DashboardLayout({ children }: LayoutProps) {
                   </li>
                 ))}
               </ul>
+            </li>
+
+            <li className="-mx-2 space-y-1">
+              <FriendReqSidebar
+                initialUnseenReqCount={unseenReqCount}
+                sessionID={user.id}
+              />
             </li>
 
             <li className="-mx-6 mt-auto flex items-center">

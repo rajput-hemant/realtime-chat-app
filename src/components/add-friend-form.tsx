@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -13,6 +14,7 @@ import { Label } from "./ui/label";
 type FormData = z.infer<typeof addFriendValidator>;
 
 export default function AddFriendForm() {
+  const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const {
@@ -24,6 +26,8 @@ export default function AddFriendForm() {
 
   async function onSubmit({ email }: FormData) {
     try {
+      setIsLoading(true);
+
       const validatedEmail = addFriendValidator.parse({ email });
 
       const response = await fetch("/api/friends/add", {
@@ -40,18 +44,18 @@ export default function AddFriendForm() {
       /* Handle Zod Errors */
       if (error instanceof z.ZodError) {
         setError("email", { message: error.message });
-        return;
       }
 
       /* Handle Fetch Errors */
       if (error instanceof Error) {
         setError("email", { message: error.message });
-        return;
       }
 
       /* Handle Unknown Errors */
       setError("email", { message: "Something went wrong" });
     }
+
+    setIsLoading(false);
   }
 
   return (
@@ -61,7 +65,9 @@ export default function AddFriendForm() {
       <div className="mt-2 flex gap-4">
         <Input placeholder="you@example.com" {...register("email")} />
 
-        <Button>Add</Button>
+        <Button disabled={isLoading}>
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add"}
+        </Button>
       </div>
 
       <p className="mt-1 text-sm text-destructive">{errors.email?.message}</p>
