@@ -7,6 +7,12 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      UPSTASH_REDIS_REST_URL: http://localhost:3000
+      UPSTASH_REDIS_REST_TOKEN: mock-token
+
+      GOOGLE_CLIENT_ID: mock-id
+      GOOGLE_CLIENT_SECRET: mock-secret
+
     name: Run Type Check & Linters
     runs-on: ubuntu-latest
 
