@@ -7,6 +7,7 @@ import { fetchRedis } from "@/lib/redis";
 import { getUser } from "@/lib/user";
 import FriendReqSidebar from "@/components/friend-req-sideabar";
 import { Icons } from "@/components/icons";
+import SidebarChatlist from "@/components/sidebar-chatlist";
 import SignOutButton from "@/components/sign-out-button";
 
 type LayoutProps = {
@@ -29,10 +30,27 @@ const sidebarOptions: SidebarOption[] = [
   },
 ];
 
+async function getFriendsByUserId(userId: string) {
+  const friendIds = (await fetchRedis(
+    "smembers",
+    `user:${userId}:friends`
+  )) as string[];
+
+  const friends = await Promise.all(
+    friendIds.map(
+      async (id) => JSON.parse(await fetchRedis("get", `user:${id}`)) as User
+    )
+  );
+
+  return friends;
+}
+
 export default async function DashboardLayout({ children }: LayoutProps) {
   const user = await getUser();
 
   if (!user) return notFound();
+
+  const friends = await getFriendsByUserId(user.id);
 
   const unseenReqCount = (
     (await fetchRedis(
@@ -48,13 +66,17 @@ export default async function DashboardLayout({ children }: LayoutProps) {
           <Icons.logo className="h-8 w-auto text-indigo-600" />
         </Link>
 
-        <div className="text-xs font-semibold leading-6 text-gray-400">
-          Your Chats
-        </div>
+        {friends.length && (
+          <div className="text-xs font-semibold leading-6 text-gray-400">
+            Your Chats
+          </div>
+        )}
 
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
-            <li>User Chats</li>
+            <li>
+              <SidebarChatlist userId={user.id} friends={friends} />
+            </li>
 
             <li>
               <div className="text-xs font-semibold leading-6 text-gray-400">
@@ -76,14 +98,14 @@ export default async function DashboardLayout({ children }: LayoutProps) {
                     </Link>
                   </li>
                 ))}
-              </ul>
-            </li>
 
-            <li className="-mx-2 space-y-1">
-              <FriendReqSidebar
-                initialUnseenReqCount={unseenReqCount}
-                sessionID={user.id}
-              />
+                <li>
+                  <FriendReqSidebar
+                    initialUnseenReqCount={unseenReqCount}
+                    sessionID={user.id}
+                  />
+                </li>
+              </ul>
             </li>
 
             <li className="-mx-6 mt-auto flex items-center">
