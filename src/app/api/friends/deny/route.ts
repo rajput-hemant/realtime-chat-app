@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const { id: idToDeny } = z.object({ id: z.string() }).parse(body);
 
     // remove the friend request from the user who sent it
-    await db.srem(`user:${session.id}:incoming_friend_requests`, idToDeny);
+    await db.srem(`user:${session.id}:incoming_friend_request`, idToDeny);
 
     return new Response("OK");
   } catch (error) {

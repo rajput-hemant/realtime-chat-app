@@ -5,7 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 
 import "@/styles/globals.css";
 
-const poppins = Poppins({ subsets: ["latin"], weight: "600" });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (

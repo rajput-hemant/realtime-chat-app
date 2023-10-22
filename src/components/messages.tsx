@@ -55,7 +55,10 @@ const Messages = ({ initialMessages, user, chatPartner }: Props) => {
                 >
                   {msg.text}{" "}
                   <span className="ml-2 text-xs text-gray-400">
-                    {new Date(msg.timestamp).toLocaleTimeString().slice(0, -3)}
+                    {new Date(msg.timestamp).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "numeric",
+                    })}
                   </span>
                 </span>
               </div>

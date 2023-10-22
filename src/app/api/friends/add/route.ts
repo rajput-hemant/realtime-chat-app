@@ -1,8 +1,10 @@
 import { z } from "zod";
 
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher.server";
 import { fetchRedis } from "@/lib/redis";
 import { getUser } from "@/lib/user";
+import { formatPusherKey } from "@/lib/utils";
 import { addFriendValidator } from "@/lib/validations";
 
 export async function POST(req: Request) {
@@ -48,7 +50,7 @@ export async function POST(req: Request) {
     /* Check if user is already added */
     const isAlreadyAdded = (await fetchRedis(
       "sismember",
-      `user:${id}:incoming_friend_requests`,
+      `user:${id}:incoming_friend_request`,
       user.id
     )) as boolean;
 
@@ -67,8 +69,15 @@ export async function POST(req: Request) {
       return new Response("User is already a friend", { status: 400 });
     }
 
+    /* notify all clients that a friend request has been sent */
+    pusherServer.trigger(
+      formatPusherKey(`user:${id}:incoming_friend_request`),
+      "incoming_friend_request",
+      { senderId: user.id, senderEmail: user.email }
+    );
+
     /* Send Add friend request */
-    db.sadd(`user:${id}:incoming_friend_requests`, user.id);
+    db.sadd(`user:${id}:incoming_friend_request`, user.id);
 
     return new Response("Friend request sent!");
   } catch (error) {

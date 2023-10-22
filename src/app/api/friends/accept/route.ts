@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     // check if the user has a friend requests
     const hasFriendRequest = await fetchRedis(
       "sismember",
-      `user:${session.id}:incoming_friend_requests`,
+      `user:${session.id}:incoming_friend_request`,
       idToAdd
     );
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     // remove the friend request from the user who sent it
     // await db.srem(`user:${idToAdd}:outbound_friend_requests`, session.id);
 
-    await db.srem(`user:${session.id}:incoming_friend_requests`, idToAdd);
+    await db.srem(`user:${session.id}:incoming_friend_request`, idToAdd);
 
     return new Response("OK");
   } catch (error) {

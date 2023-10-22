@@ -12,7 +12,7 @@ export default async function RequestsPage() {
 
   const incomingSenderIds = (await fetchRedis(
     "smembers",
-    `user:${user.id}:incoming_friend_requests`
+    `user:${user.id}:incoming_friend_request`
   )) as string[];
 
   const incomingSenders: IncomingFriendRequest[] = await Promise.all(

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, UserPlus, X } from "lucide-react";
 
 import { IncomingFriendRequest } from "@/types/pusher";
+import { pusherClient } from "@/lib/pusher.client";
+import { formatPusherKey } from "@/lib/utils";
 
 type FriendRequestsPageProps = {
   incomingFriendRequests: IncomingFriendRequest[];
@@ -18,6 +20,28 @@ export default function FriendRequestsPage({
   const router = useRouter();
 
   const [friendReq, setFriendReq] = useState(incomingFriendRequests);
+
+  useEffect(() => {
+    // subscribe to incoming friend requests
+    pusherClient.subscribe(
+      formatPusherKey(`user:${sessionID}:incoming_friend_request`)
+    );
+
+    function friendRequestHandler(friendReq: IncomingFriendRequest) {
+      setFriendReq((prev) => [...prev, friendReq]);
+    }
+
+    // listen for incoming friend requests
+    pusherClient.bind("incoming_friend_request", friendRequestHandler);
+
+    return () => {
+      pusherClient.unsubscribe(
+        formatPusherKey(`user:${sessionID}:incoming_friend_request`)
+      );
+
+      pusherClient.unbind("incoming_friend_request", friendRequestHandler);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function acceptFriendRequest(id: string) {
     await fetch(`/api/friends/accept`, {

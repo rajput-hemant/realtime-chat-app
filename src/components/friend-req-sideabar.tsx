@@ -1,16 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { User } from "lucide-react";
+
+import { pusherClient } from "@/lib/pusher.client";
+import { formatPusherKey } from "@/lib/utils";
 
 type FriendReqSidebarProps = {
   initialUnseenReqCount: number;
   sessionID: string;
 };
 
-function FriendReqSidebar({ initialUnseenReqCount }: FriendReqSidebarProps) {
+function FriendReqSidebar({
+  initialUnseenReqCount,
+  sessionID,
+}: FriendReqSidebarProps) {
   const [unseenReqCount, setUnseenReqCount] = useState(initialUnseenReqCount);
+  useEffect(() => {
+    // subscribe to incoming friend requests
+    pusherClient.subscribe(
+      formatPusherKey(`user:${sessionID}:incoming_friend_request`)
+    );
+
+    function friendRequestHandler() {
+      setUnseenReqCount((prev) => prev + 1);
+    }
+
+    // listen for incoming friend requests
+    pusherClient.bind("incoming_friend_request", friendRequestHandler);
+
+    return () => {
+      pusherClient.unsubscribe(
+        formatPusherKey(`user:${sessionID}:incoming_friend_request`)
+      );
+
+      pusherClient.unbind("incoming_friend_request", friendRequestHandler);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Link

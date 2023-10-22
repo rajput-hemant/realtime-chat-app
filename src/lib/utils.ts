@@ -9,3 +9,12 @@ import { twMerge } from "tailwind-merge";
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
+
+/**
+ * Formats the given pusher key to have "__" instead of ":"
+ * @param key The key to format
+ * @returns The formatted key
+ */
+export function formatPusherKey(key: string) {
+  return key.replace(/:/g, "__");
+}

@@ -55,7 +55,7 @@ export default async function DashboardLayout({ children }: LayoutProps) {
   const unseenReqCount = (
     (await fetchRedis(
       "smembers",
-      `user:${user.id}:incoming_friend_requests`
+      `user:${user.id}:incoming_friend_request`
     )) as User[]
   ).length;
 
@@ -66,7 +66,7 @@ export default async function DashboardLayout({ children }: LayoutProps) {
           <Icons.logo className="h-8 w-auto text-indigo-600" />
         </Link>
 
-        {friends.length && (
+        {friends.length > 0 && (
           <div className="text-xs font-semibold leading-6 text-gray-400">
             Your Chats
           </div>
@@ -139,7 +139,7 @@ export default async function DashboardLayout({ children }: LayoutProps) {
         </nav>
       </div>
 
-      {children}
+      <div className="flex w-full overflow-x-hidden">{children}</div>
     </div>
   );
 }
