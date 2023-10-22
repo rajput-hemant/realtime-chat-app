@@ -1,17 +1,18 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Session } from "next-auth";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { type Message } from "@/lib/validations";
 
 type Props = {
   initialMessages: Message[];
-  userId: string;
+  user: User;
+  chatPartner: User;
 };
 
-const Messages = ({ initialMessages, userId }: Props) => {
+const Messages = ({ initialMessages, user, chatPartner }: Props) => {
   const scrollDownRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
@@ -27,7 +28,7 @@ const Messages = ({ initialMessages, userId }: Props) => {
       <div ref={scrollDownRef} />
 
       {messages.map((msg, i) => {
-        const isCurrentUser = msg.senderId === userId;
+        const isCurrentUser = msg.senderId === user.id;
         const hasNextMssgFromSameUser =
           messages[i - 1]?.senderId === messages[i].senderId;
 
@@ -54,9 +55,27 @@ const Messages = ({ initialMessages, userId }: Props) => {
                 >
                   {msg.text}{" "}
                   <span className="ml-2 text-xs text-gray-400">
-                    {msg.timestamp}
+                    {new Date(msg.timestamp).toLocaleTimeString().slice(0, -3)}
                   </span>
                 </span>
+              </div>
+
+              <div
+                className={cn("relative h-6 w-6", {
+                  "order-2": isCurrentUser,
+                  "order-1": !isCurrentUser,
+                  invisible: hasNextMssgFromSameUser,
+                })}
+              >
+                <Image
+                  src={isCurrentUser ? user.image : chatPartner.image}
+                  alt={`${
+                    isCurrentUser ? user.name : chatPartner.name
+                  } Profile Picture`}
+                  fill
+                  referrerPolicy="no-referrer"
+                  className="rounded-full"
+                />
               </div>
             </div>
           </div>

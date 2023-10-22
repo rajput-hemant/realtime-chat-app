@@ -26,7 +26,7 @@ const ChatInput = ({ chatId, chatPartner }: Props) => {
         method: "POST",
         body: JSON.stringify({
           chatId,
-          message: input,
+          text: input,
         }),
       });
 
