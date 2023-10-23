@@ -76,6 +76,7 @@ const Chat = async ({ params: { id } }: Props) => {
 
       <Messages
         initialMessages={initialMessages}
+        chatId={id}
         user={user}
         chatPartner={chatPartner}
       />

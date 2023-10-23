@@ -32,16 +32,16 @@ export default function FriendRequestsPage({
     }
 
     // listen for incoming friend requests
-    pusherClient.bind("incoming_friend_request", friendRequestHandler);
+    pusherClient.bind("incoming-friend-request", friendRequestHandler);
 
     return () => {
       pusherClient.unsubscribe(
         formatPusherKey(`user:${sessionID}:incoming_friend_request`)
       );
 
-      pusherClient.unbind("incoming_friend_request", friendRequestHandler);
+      pusherClient.unbind("incoming-friend-request", friendRequestHandler);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sessionID]);
 
   async function acceptFriendRequest(id: string) {
     await fetch(`/api/friends/accept`, {

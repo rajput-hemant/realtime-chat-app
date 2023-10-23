@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher.server";
 import { fetchRedis } from "@/lib/redis";
 import { getUser } from "@/lib/user";
 
@@ -37,6 +38,9 @@ export async function POST(req: Request) {
     if (!hasFriendRequest) {
       return new Response("No friend request", { status: 400 });
     }
+
+    // notify the user that their friend request was accepted
+    pusherServer.trigger(`user:${idToAdd}:friends`, "new_friend", null);
 
     // add both users to each others friends list
     await db.sadd(`user:${session.id}:friends`, idToAdd);

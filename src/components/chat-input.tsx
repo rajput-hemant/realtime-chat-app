@@ -19,6 +19,8 @@ const ChatInput = ({ chatId, chatPartner }: Props) => {
   const [isSending, setIsSending] = useState(false);
 
   async function sendMessage() {
+    if (!input) return;
+
     setIsSending(true);
 
     try {

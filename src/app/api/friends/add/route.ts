@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     /* notify all clients that a friend request has been sent */
     pusherServer.trigger(
       formatPusherKey(`user:${id}:incoming_friend_request`),
-      "incoming_friend_request",
+      "incoming-friend-request",
       { senderId: user.id, senderEmail: user.email }
     );
 

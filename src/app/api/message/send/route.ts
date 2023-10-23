@@ -1,8 +1,10 @@
 import { nanoid } from "nanoid";
 
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher.server";
 import { fetchRedis } from "@/lib/redis";
 import { getUser } from "@/lib/user";
+import { formatPusherKey } from "@/lib/utils";
 import { Message, messageValidator } from "@/lib/validations";
 
 export async function POST(req: Request) {
@@ -31,9 +33,9 @@ export async function POST(req: Request) {
 
     if (!isFriend) return new Response("Unauthorized", { status: 401 });
 
-    // const sender = JSON.parse(
-    //   await fetchRedis("get", `user:${user.id}`)
-    // ) as User;
+    const sender = JSON.parse(
+      await fetchRedis("get", `user:${user.id}`)
+    ) as User;
 
     const timestamp = Date.now();
 
@@ -45,6 +47,19 @@ export async function POST(req: Request) {
     };
 
     const message = messageValidator.parse(messagePayload);
+
+    // notify all connected clients
+    pusherServer.trigger(
+      formatPusherKey(`chat:${chatId}`),
+      "incoming-messages",
+      message
+    );
+
+    pusherServer.trigger(
+      formatPusherKey(`user:${partnerId}:chats`),
+      "new-message",
+      { ...message, senderImg: sender.image, senderName: sender.name }
+    );
 
     await db.zadd(`chat:${chatId}:messages`, {
       score: timestamp,

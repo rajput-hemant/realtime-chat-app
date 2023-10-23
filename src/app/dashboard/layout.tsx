@@ -139,7 +139,9 @@ export default async function DashboardLayout({ children }: LayoutProps) {
         </nav>
       </div>
 
-      <div className="flex w-full overflow-x-hidden">{children}</div>
+      <div className="container flex w-full overflow-x-auto py-16 md:py-12">
+        {children}
+      </div>
     </div>
   );
 }
