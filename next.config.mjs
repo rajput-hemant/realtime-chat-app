@@ -3,7 +3,10 @@ import "./src/lib/env.mjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["lh3.googleusercontent.com", "i.pravatar.cc"],
+    remotePatterns: [
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      { protocol: "https", hostname: "i.pravatar.cc" },
+    ],
   },
   /* ... */
 };
