@@ -9,7 +9,6 @@ import { z } from "zod";
 import { addFriendValidator } from "@/lib/validations";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 type FormData = z.infer<typeof addFriendValidator>;
 
@@ -60,7 +59,9 @@ export default function AddFriendForm() {
 
   return (
     <form className="max-w-sm" onSubmit={handleSubmit(onSubmit)}>
-      <Label htmlFor="email">Add Friend by E-Mail</Label>
+      <label htmlFor="email" className="text-sm font-medium leading-none">
+        Add Friend by E-Mail
+      </label>
 
       <div className="mt-2 flex gap-4">
         <Input placeholder="you@example.com" {...register("email")} />

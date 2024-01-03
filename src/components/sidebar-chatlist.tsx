@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Reply } from "lucide-react";
+import { toast } from "sonner";
 
 import { pusherClient } from "@/lib/pusher.client";
 import { formatPusherKey } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "./ui/toast";
 
 type Props = {
   friends: User[];
@@ -52,15 +51,13 @@ const SidebarChatlist = ({ friends, userId }: Props) => {
           ? `${message.text.slice(0, 50)}...`
           : message.text;
 
-      toast({
-        title: message.senderName,
+      toast(message.senderName, {
         description: formattedText,
         duration: 10000,
-        action: (
-          <ToastAction altText="Reply" onClick={() => router.push(chathref)}>
-            Reply <Reply className="ml-2 h-4 w-4" />
-          </ToastAction>
-        ),
+        action: {
+          label: "Reply",
+          onClick: () => router.push(chathref),
+        },
       });
 
       setUnseenMessages((prev) => [...prev, message]);
@@ -79,7 +76,6 @@ const SidebarChatlist = ({ friends, userId }: Props) => {
       pusherClient.unsubscribe(formatPusherKey(`user:${userId}:chats`));
       pusherClient.unsubscribe(formatPusherKey(`user:${userId}:friends`));
 
-      pusherClient.unbind("new-message", chatHandler);
       pusherClient.unbind("new-friend", newFriendHandler);
     };
   }, [pathname, router, userId]);

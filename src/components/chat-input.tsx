@@ -2,11 +2,10 @@
 
 import { useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-import { toast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { ToastAction } from "./ui/toast";
 
 type Props = {
   chatId: string;
@@ -35,11 +34,12 @@ const ChatInput = ({ chatId, chatPartner }: Props) => {
       setInput("");
       textareaRef.current?.focus();
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+      toast.error("Uh oh! Something went wrong.", {
         description: "There was a problem sending your message.",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
+        action: {
+          label: "Try again",
+          onClick: () => toast.dismiss(),
+        },
       });
     } finally {
       setIsSending(false);

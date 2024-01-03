@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Loader2, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
-import { toast } from "@/hooks/use-toast";
 import { Button, ButtonProps } from "./ui/button";
 
 export default function SignOutButton({}: ButtonProps) {
@@ -15,9 +15,7 @@ export default function SignOutButton({}: ButtonProps) {
     try {
       await signOut();
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+      toast.error("Uh oh! Something went wrong.", {
         description: "There was a problem signing you out.",
       });
     }

@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
-import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast";
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,11 +16,12 @@ export default function Login() {
     try {
       await signIn("google");
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+      toast.error("Uh oh! Something went wrong.", {
         description: "There was a problem with your request.",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
+        action: {
+          label: "Try again",
+          onClick: () => toast.dismiss(),
+        },
       });
     }
 
