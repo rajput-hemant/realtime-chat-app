@@ -17,7 +17,7 @@
     "@hookform/resolvers": "^3.3.4",
     "@next-auth/upstash-redis-adapter": "^3.0.4",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "@upstash/redis": "^1.30.0",
+    "@upstash/redis": "^1.30.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "encoding": "^0.1.13",
@@ -34,15 +34,15 @@
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.6"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",
     "@commitlint/config-conventional": "^18.6.3",
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
     "@total-typescript/ts-reset": "^0.5.1",
-    "@types/node": "20.12.8",
-    "@types/react": "18.3.1",
+    "@types/node": "20.12.11",
+    "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.19",
     "eslint": "8.57.0",
